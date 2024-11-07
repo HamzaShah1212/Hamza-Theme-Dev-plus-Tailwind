@@ -12,9 +12,10 @@
     {{ 'application.css' | asset_url | stylesheet_tag }}
     {{ 'application.js' | asset_url | script_tag }}
   </head>
-  <body>
-    {% sections 'main' %}
+  <body >
+
     <main role="main">
+      <h2 class="text-white">Hello</h2>
       {{ content_for_layout }}
     </main>
   </body>
