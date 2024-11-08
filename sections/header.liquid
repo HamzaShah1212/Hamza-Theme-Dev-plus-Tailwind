@@ -1,8 +1,6 @@
-<nav class="flex bg-purple-900">
-  <ul class="flex">
-    <li>Home</li>
-    <li>About</li>
-    <li>Services</li>
-    <li>Contact</li>
-  </ul>
-</nav>
+<h2 class="text-center">{{shop.name}}</h2>
+{% for item in linklists.main-menu.links %}
+<div>
+    <a href="{{item.url}}"> {{item.title}}</a>
+</div>
+{% endfor %}
