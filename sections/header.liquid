@@ -1,5 +1,5 @@
 <!-- Navbar -->
-<div class="flex justify-between items-center py-4 px-6 bg-gradient-to-r from-blue-500 to-indigo-600 shadow-md">
+<div class="flex justify-between items-center py-4 px-6 bg-gradient-to-r from-blue-500 to-indigo-600 shadow-lg">
   <!-- Shop Name (Centered on Small Screens) -->
   <h2 class="text-3xl font-bold text-white">{{ shop.name }}</h2>
 
@@ -14,21 +14,60 @@
   <!-- Main Menu -->
   <div id="menu" class="hidden md:flex w-full md:justify-between items-center">
     <!-- Left Side: Main Links -->
-    <div class="flex flex-col md:flex-row md:space-x-8 space-y-4 md:space-y-0">
+    <div class="flex flex-col md:flex-row md:space-x-6 space-y-4 md:space-y-0">
       {% for item in linklists.main-menu.links %}
-        <a href="{{ item.url }}" class="text-lg font-medium text-white hover:text-yellow-300 transition duration-200 ease-in-out hover:underline">
-          {{ item.title }}
-        </a>
+        {% if item.url != blank %}
+          <div class="relative group">
+            <a href="{{ item.url }}" class="text-lg font-medium text-white hover:text-yellow-300 transition duration-200 ease-in-out hover:underline">
+              {{ item.title }}
+            </a>
+
+            <!-- Sub-Links (Dropdown) -->
+            {% if item.links %}
+              <div class="absolute left-0 hidden group-hover:block bg-white text-black p-4 rounded-lg shadow-xl mt-2 w-48 z-50">
+                <ul class="space-y-2">
+                  {% for sublink in item.links %}
+                    <li>
+                      <a href="{{ sublink.url }}" class="block text-sm text-gray-700 hover:text-blue-600 transition duration-200 ease-in-out">{{ sublink.title }}</a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+          </div>
+        {% else %}
+          <span class="text-lg font-medium text-gray-400">
+            {{ item.title }} 
+          </span>
+        {% endif %}
       {% endfor %}
+
+      <!-- Catalog Dropdown (Special Case) -->
+      <div class="relative group">
+        <a href="#" class="text-lg font-medium text-white hover:text-yellow-300 transition duration-200 ease-in-out hover:underline flex items-center">
+          Catalog 
+          <!-- Add Dropdown Icon (Chevron Down) -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 inline-block ml-1 transition-transform duration-200 ease-in-out transform group-hover:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </a>
+
+        <!-- Catalog Sub-Links (Dropdown) -->
+        <div class="absolute left-0 hidden group-hover:block bg-gradient-to-r from-indigo-500 to-blue-500 text-white p-4 rounded-lg shadow-xl mt-2 w-56 z-50">
+          <ul class="space-y-3">
+            <li><a href="{{ routes.catalog_page_1 }}" class="block text-sm text-gray-100 hover:text-yellow-300 transition duration-200 ease-in-out hover:underline">Catalog Item 1</a></li>
+            <li><a href="{{ routes.catalog_page_2 }}" class="block text-sm text-gray-100 hover:text-yellow-300 transition duration-200 ease-in-out hover:underline">Catalog Item 2</a></li>
+            <li><a href="{{ routes.catalog_page_3 }}" class="block text-sm text-gray-100 hover:text-yellow-300 transition duration-200 ease-in-out hover:underline">Catalog Item 3</a></li>
+          </ul>
+        </div>
+      </div>
     </div>
 
-    <!-- Right Side: Signup, Login, and Cart Links -->
+    <!-- Right Side: Cart, Signup, and Login Links -->
     <div class="flex items-center space-x-6">
       <!-- Cart Icon -->
-      <a href="{{ routes.cart_url }}" class="relative text-white hover:text-yellow-300 transition duration-200 ease-in-out">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.6 3M7 13h10l4-8H5.6M7 13L5.4 5M7 13l-1 5h12l-1-5M10 21h4"></path>
-        </svg>
+      <a href="{{ routes.cart_add_url }}" class="relative text-white hover:text-yellow-300 transition duration-200 ease-in-out">
+        {% render 'icon' %}
         <!-- Cart Item Count (Example: 3 items) -->
         <span class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
       </a>
