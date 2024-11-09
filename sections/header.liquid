@@ -1,100 +1,114 @@
-<!-- Navbar -->
-<div class="flex justify-between items-center py-4 px-6 bg-gradient-to-r from-blue-500 to-indigo-600 shadow-lg">
-  <!-- Shop Name (Centered on Small Screens) -->
-  <h2 class="text-3xl font-bold text-white">{{ shop.name }}</h2>
+<!-- Navbar Container -->
+<div class="relative bg-white" x-data="{ open: false }">
+  <div class="mx-auto px-4 sm:px-6">
+    <div class="flex justify-between items-center py-6 md:justify-start md:space-x-10">
 
-  <!-- Hamburger Menu Button (Visible on Small Screens) -->
-  <button id="menu-toggle" class="md:hidden text-white focus:outline-none">
-    <!-- Hamburger Icon -->
-    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-    </svg>
-  </button>
-
-  <!-- Main Menu -->
-  <div id="menu" class="hidden md:flex w-full md:justify-between items-center">
-    <!-- Left Side: Main Links -->
-    <div class="flex flex-col md:flex-row md:space-x-6 space-y-4 md:space-y-0">
-      {% for item in linklists.main-menu.links %}
-        {% if item.url != blank %}
-          <div class="relative group">
-            <a href="{{ item.url }}" class="text-lg font-medium text-white hover:text-yellow-300 transition duration-200 ease-in-out hover:underline">
-              {{ item.title }}
-            </a>
-
-            <!-- Sub-Links (Dropdown) -->
-            {% if item.links %}
-              <div class="absolute left-0 hidden group-hover:block bg-white text-black p-4 rounded-lg shadow-xl mt-2 w-48 z-50">
-                <ul class="space-y-2">
-                  {% for sublink in item.links %}
-                    <li>
-                      <a href="{{ sublink.url }}" class="block text-sm text-gray-700 hover:text-blue-600 transition duration-200 ease-in-out">{{ sublink.title }}</a>
-                    </li>
-                  {% endfor %}
-                </ul>
-              </div>
-            {% endif %}
-          </div>
-        {% else %}
-          <span class="text-lg font-medium text-gray-400">
-            {{ item.title }} 
-          </span>
-        {% endif %}
-      {% endfor %}
-
-      <!-- Catalog Dropdown (Special Case) -->
-      <div class="relative group">
-        <a href="#" class="text-lg font-medium text-white hover:text-yellow-300 transition duration-200 ease-in-out hover:underline flex items-center">
-          Catalog 
-          <!-- Add Dropdown Icon (Chevron Down) -->
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 inline-block ml-1 transition-transform duration-200 ease-in-out transform group-hover:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-          </svg>
-        </a>
-
-        <!-- Catalog Sub-Links (Dropdown) -->
-        <div class="absolute left-0 hidden group-hover:block bg-gradient-to-r from-indigo-500 to-blue-500 text-white p-4 rounded-lg shadow-xl mt-2 w-56 z-50">
-          <ul class="space-y-3">
-            <li><a href="{{ routes.catalog_page_1 }}" class="block text-sm text-gray-100 hover:text-yellow-300 transition duration-200 ease-in-out hover:underline">Catalog Item 1</a></li>
-            <li><a href="{{ routes.catalog_page_2 }}" class="block text-sm text-gray-100 hover:text-yellow-300 transition duration-200 ease-in-out hover:underline">Catalog Item 2</a></li>
-            <li><a href="{{ routes.catalog_page_3 }}" class="block text-sm text-gray-100 hover:text-yellow-300 transition duration-200 ease-in-out hover:underline">Catalog Item 3</a></li>
-          </ul>
-        </div>
+      <!-- Store Name / Logo -->
+      <div class="flex justify-start lg:flex-1 truncate">
+        <h1 class="text-xl font-bold truncate">{{ shop.name }}</h1>
       </div>
-    </div>
 
-    <!-- Right Side: Cart, Signup, and Login Links -->
-    <div class="flex items-center space-x-6">
-      <!-- Cart Icon -->
-      <a href="{{ routes.cart_add_url }}" class="relative text-white hover:text-yellow-300 transition duration-200 ease-in-out">
+      <!-- Mobile Menu Button -->
+      <div class="md:hidden">
+        <button @click="open = ! open" class="text-gray-500 hover:text-gray-900 focus:outline-none">
+          <!-- Hamburger Icon -->
+          <svg class="h-6 w-6" x-show="!open" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+          <!-- Close Icon -->
+          <svg class="h-6 w-6" x-show="open" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Navigation Menu for Desktop -->
+      <nav class="hidden  md:flex space-x-10">
+        {% for link in linklists.main-menu.links %}
+          {% if link.links != blank %}
+            <div class="relative" x-data="{ openSubmenu: false }">
+              <button type="button" class="inline-flex items-center text-base text-gray-500 hover:text-gray-900" @click="openSubmenu = ! openSubmenu">
+                {{ link.title }}
+                {% render 'icon-dropdown' %}
+              </button>
+              <div class="absolute z-10 -ml-5 mt-5 transform px-2 w-screen max-w-md sm:px-0 lg:ml-0 lg:left-1/2 lg:-translate-x-1/2"
+                   x-show="openSubmenu"
+                   @click.away="openSubmenu = false"
+                   x-transition>
+                <div class="shadow-lg border ring-black ring-opacity-5 overflow-hidden rounded-lg">
+                  <div class="relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8">
+                    {% for sublink in link.links %}
+                      <a href="{{ sublink.url }}" class="-m-3 p-3 flex items-start rounded-lg hover:bg-gray-100">
+                        <div class="ml-4">
+                          <p class="text-gray-900 text-base font-medium">{{ sublink.title }}</p>
+                        </div>
+                      </a>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% else %}
+            <a href="{{ link.url }}" class="text-base  text-gray-500 hover:text-gray-900">{{ link.title }}</a>
+          {% endif %}
+        {% endfor %}
+      </nav>
+
+      <!-- Right Side Links: Cart, Login, Register for Desktop -->
+      <div class="hidden md:flex items-center justify-end md:flex-1 space-x-5">
         {% render 'icon' %}
-        <!-- Cart Item Count (Example: 3 items) -->
-        <span class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
-      </a>
+        <a href="/cart" class="whitespace-nowrap text-base text-gray-500 hover:text-gray-900">Cart</a>
+        <a href="" class="text-base text-gray-500 hover:text-gray-900">Login</a>
+        <a href="" class="text-base text-gray-500 hover:text-gray-900">Register</a>
+      </div>
 
-      <!-- Signup and Login Links -->
-      <a href="{{ routes.account_register_url }}" class="text-lg font-medium text-white hover:text-yellow-300 transition duration-200 ease-in-out">
-        Signup
-      </a>
-      <a href="{{ routes.account_login_url }}" class="text-lg font-medium text-white hover:text-yellow-300 transition duration-200 ease-in-out">
-        Login
-      </a>
     </div>
+  </div>
+
+  <!-- Mobile Navigation Menu -->
+  <!-- Mobile Navigation Menu -->
+<div class="fixed inset-0 z-20   p-4 md:hidden" x-show="open" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform -translate-y-full" x-transition:enter-end="opacity-100 transform translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 transform translate-y-0" x-transition:leave-end="opacity-0 transform -translate-y-full">
+  <div class="pt-2 pb-3 space-y-1 flex flex-col items-center"> <!-- Add flex and items-center for centering -->
+    {% for link in linklists.main-menu.links %}
+      {% if link.links != blank %}
+        <div x-data="{ openSubmenu: false }">
+          <button @click="openSubmenu = !openSubmenu" class="w-full text-left px-3 py-2 text-gray-700 font-medium hover:bg-gray-100">
+            {{ link.title }}
+          </button>
+          <div x-show="openSubmenu" class="pl-6 space-y-1">
+            {% for sublink in link.links %}
+              <a href="{{ sublink.url }}" @click="open = false" class="block px-3 py-2 text-gray-500 hover:bg-gray-100">{{ sublink.title }}</a>
+            {% endfor %}
+          </div>
+        </div>
+      {% else %}
+        <a href="{{ link.url }}" @click="open = false" class="block px-3 py-2 text-gray-700 font-medium hover:bg-gray-100">{{ link.title }}</a>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <div class="py-3 border-t border-gray-200">
+    <a href="/cart" @click="open = false" class="block px-3 py-2 text-gray-700 hover:bg-gray-100">Cart</a>
+    <a href="" @click="open = false" class="block px-3 py-2 text-gray-700 hover:bg-gray-100">Login</a>
+    <a href="" @click="open = false" class="block px-3 py-2 text-gray-700 hover:bg-gray-100">Register</a>
   </div>
 </div>
 
-<!-- JavaScript for Hamburger Menu Toggle -->
-<script>
-  document.getElementById('menu-toggle').addEventListener('click', function () {
-    const menu = document.getElementById('menu');
-    menu.classList.toggle('hidden');
-  });
-</script>
+
+<!-- STEP 2: Import Alpine.js in theme.liquid or layout file -->
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
 {% schema %}
 {
-    "name": "Navbar",
-    "settings": [
-        
-        ]
+  "name": "navbar",
+  "settings": [
+    {
+      "type": "text",
+      "id": "",
+      "label": "",
+      "default": "",
+      "info": "",
+      
+    } 
+    ]
 }
 {% endschema %}
